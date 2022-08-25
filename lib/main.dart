@@ -18,6 +18,7 @@ class Calculator extends StatefulWidget {
 
 class _CalculatorState extends State<Calculator> {
   dynamic displaytxt = 20;
+  List<String>resultados=[];
   //Button Widget
   Widget calcbutton(String btntxt,Color btncolor,Color txtcolor){
     return  Container(
@@ -57,6 +58,18 @@ class _CalculatorState extends State<Calculator> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             // Calculator display
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  reverse: true,
+                  itemCount: resultados.length,
+                  itemBuilder: (context, index) {
+                    return Text(resultados.reversed.toList()[index],
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.right,);
+                  }),
+            ),
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Row(
@@ -79,7 +92,7 @@ class _CalculatorState extends State<Calculator> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 calcbutton('Cl',Colors.yellow[700]!,Colors.white),
-                calcbutton('√',Colors.yellow[700]!,Colors.white),
+                calcbutton('+/-',Colors.yellow[700]!,Colors.white),
                 calcbutton('%',Colors.yellow[700]!,Colors.white),
                 calcbutton('/',Colors.redAccent,Colors.white),
               ],
@@ -164,6 +177,7 @@ class _CalculatorState extends State<Calculator> {
       finalResult = '0';
       opr = '';
       preOpr = '';
+      resultados.clear();
 
     } else if( opr == '=' && btnText == '=') {
 
@@ -176,7 +190,6 @@ class _CalculatorState extends State<Calculator> {
       } else if( preOpr == '/') {
         finalResult = div();
       }
-
     } else if(btnText == '+' || btnText == '-' || btnText == 'x' || btnText == '/' || btnText == '=') {
 
       if(numOne == 0) {
@@ -197,6 +210,7 @@ class _CalculatorState extends State<Calculator> {
       preOpr = opr;
       opr = btnText;
       result = '';
+      resultados.add(finalResult);
     }
     else if(btnText == '%') {
       result = numOne / 100;
