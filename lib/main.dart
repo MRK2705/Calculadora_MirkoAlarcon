@@ -68,7 +68,7 @@ class _CalculatorState extends State<Calculator> {
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 100,
+                        fontSize: 65,
                       ),
                     ),
                   )
@@ -156,7 +156,7 @@ class _CalculatorState extends State<Calculator> {
   void calculation(btnText) {
 
 
-    if(btnText  == 'AC') {
+    if(btnText  == 'Cl') {
       text ='0';
       numOne = 0;
       numTwo = 0;
