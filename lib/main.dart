@@ -1,14 +1,17 @@
+import 'package:calcu/bloc/blocCalculadora/bloc_calculadora_bloc.dart';
+import 'package:calcu/widget/button.dart';
+import 'package:calcu/widget/pantalla.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Calculator(),
-    );
+    return MultiBlocProvider(providers: [
+      BlocProvider(create: (_) => BlocCalculadoraBloc())
+    ], child: MaterialApp(home: Calculator()));
   }
 }
 class Calculator extends StatefulWidget {
@@ -20,28 +23,10 @@ class _CalculatorState extends State<Calculator> {
   dynamic displaytxt = 20;
   List<String>resultados=[];
   //Button Widget
-  Widget calcbutton(String btntxt,Color btncolor,Color txtcolor){
-    return  Container(
-      // ignore: deprecated_member_use
-      child: RaisedButton(
-        onPressed: (){
-          calculation(btntxt);
-        },
-        child: Text('$btntxt',
-          style: TextStyle(
-            fontSize: 35,
-            color: txtcolor,
-          ),
-        ),
-        shape: RoundedRectangleBorder(),
-        color: btncolor,
-        padding: EdgeInsets.all(20),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     //Calculator
+    final blc=BlocProvider.of<BlocCalculadoraBloc>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -70,61 +55,44 @@ class _CalculatorState extends State<Calculator> {
                     textAlign: TextAlign.right,);
                   }),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text('$text',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 65,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+            Resultados(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                calcbutton('Cl',Colors.yellow[700]!,Colors.white),
-                calcbutton('+/-',Colors.yellow[700]!,Colors.white),
-                calcbutton('%',Colors.yellow[700]!,Colors.white),
-                calcbutton('/',Colors.redAccent,Colors.white),
+                calcButton('Cl',Colors.yellow[700]!,Colors.white,()=>blc.add(eliminar())),
+                calcButton('+/-',Colors.yellow[700]!,Colors.white,()=>(){}),
+                calcButton('%',Colors.yellow[700]!,Colors.white,()=>(){}),
+                calcButton('/',Colors.redAccent,Colors.white,()=>blc.add(operador('/'))),
               ],
             ),
             SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                calcbutton('7',Colors.red,Colors.white),
-                calcbutton('8',Colors.red,Colors.white),
-                calcbutton('9',Colors.red,Colors.white),
-                calcbutton('x',Colors.redAccent,Colors.white),
+                calcButton('7',Colors.red,Colors.white,()=>blc.add(addNum('7'))),
+                calcButton('8',Colors.red,Colors.white,()=>blc.add(addNum('8'))),
+                calcButton('9',Colors.red,Colors.white,()=>blc.add(addNum('9'))),
+                calcButton('x',Colors.redAccent,Colors.white,()=>blc.add(operador('x'))),
               ],
             ),
             SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                calcbutton('4',Colors.red,Colors.white),
-                calcbutton('5',Colors.red,Colors.white),
-                calcbutton('6',Colors.red,Colors.white),
-                calcbutton('-',Colors.redAccent,Colors.white),
+                calcButton('4',Colors.red,Colors.white,()=>blc.add(addNum('4'))),
+                calcButton('5',Colors.red,Colors.white,()=>blc.add(addNum('5'))),
+                calcButton('6',Colors.red,Colors.white,()=>blc.add(addNum('6'))),
+                calcButton('-',Colors.redAccent,Colors.white,()=>blc.add(operador('-'))),
               ],
             ),
             SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                calcbutton('1',Colors.red,Colors.white),
-                calcbutton('2',Colors.red,Colors.white),
-                calcbutton('3',Colors.red,Colors.white),
-                calcbutton('+',Colors.redAccent,Colors.white),
+                calcButton('1',Colors.red,Colors.white,()=>blc.add(addNum('1'))),
+                calcButton('2',Colors.red,Colors.white,()=>blc.add(addNum('2'))),
+                calcButton('3',Colors.red,Colors.white,()=>blc.add(addNum('3'))),
+                calcButton('+',Colors.redAccent,Colors.white,()=>blc.add(operador('+'))),
               ],
             ),
             SizedBox(height: 10,),
@@ -136,7 +104,7 @@ class _CalculatorState extends State<Calculator> {
                 RaisedButton(
                   padding: EdgeInsets.fromLTRB(26, 20, 128, 20),
                   onPressed: (){
-                    calculation('0');
+                    blc.add(addNum('0'));
                   },
                   shape: RoundedRectangleBorder(),
                   child: Text('0',
@@ -146,8 +114,8 @@ class _CalculatorState extends State<Calculator> {
                   ),
                   color: Colors.red,
                 ),
-                calcbutton('.',Colors.red,Colors.white),
-                calcbutton('=',Colors.redAccent,Colors.white),
+                calcButton('.',Colors.red,Colors.white,()=>blc.add(addNum('.'))),
+                calcButton('=',Colors.redAccent,Colors.white,()=>blc.add(resultado())),
               ],
             ),
             SizedBox(height: 10,),
