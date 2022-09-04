@@ -11,31 +11,40 @@ class BlocCalculadoraBloc extends Bloc<BlocCalculadoraEvent, BlocCalculadoraInit
     });
     on<addNum>((event, emit) {
       if(state.operation==''){
-        emit(BlocCalculadoraInitial(
-          num1: state.num1+event.num
-        ));
+        if(!state.num1.contains('.')||event.num!='.'){
+          emit(BlocCalculadoraInitial(
+          num1: state.num1+event.num,
+          info: state.num1+event.num
+          ));
+        }
       }
       else{
-        emit(BlocCalculadoraInitial(
-          num2: state.num2+event.num, num1:state.num1, operation: state.operation
-        ));
+        if(!state.num2.contains('.')||event.num!='.'){
+          emit(BlocCalculadoraInitial(
+          num2: state.num2+event.num, num1:state.num1, operation: state.operation,
+          info: state.num1+state.operation+state.num2+event.num
+          ));
+        }
       }
     });
     on<operador>((event, emit) {
       if(state.result=='' && state.num2==''){
         emit(BlocCalculadoraInitial(
-          operation: event.op, num1: state.num1
+          operation: event.op, num1: state.num1,
+          info: state.num1+event.op
         ));
       }
       else{
         emit(BlocCalculadoraInitial(
-          operation: event.op, num1: state.result
+          operation: event.op, num1: state.result,
+          info: state.result+event.op
         ));
       }
     });
     on<resultado>((event, emit) {
       emit(BlocCalculadoraInitial(
-        result: total(state.num1, state.num2, state.operation), num1: state.num1, num2: state.num2, operation: state.operation
+        result: total(state.num1, state.num2, state.operation), num1: state.num1, num2: state.num2, operation: state.operation,
+        info: total(state.num1, state.num2, state.operation)
       ));
     });
   }
@@ -55,6 +64,8 @@ String total(String num1, String num2, String op){
       tot=n1*n2;
     } else if( op == '/') {
       tot=n1/n2;
+    } else if( op == '%') {
+      tot=n1*(n2/100);
     }
     //condiciones de division sobre 0;
  return tot.toString();

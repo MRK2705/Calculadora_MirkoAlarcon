@@ -44,28 +44,19 @@ class _CalculatorState extends State<Calculator> {
           children: <Widget>[
             // Calculator display
             SizedBox(
-              height: 100,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  reverse: true,
-                  itemCount: resultados.length,
-                  itemBuilder: (context, index) {
-                    return Text(resultados.reversed.toList()[index],
-                    style: TextStyle(color: Colors.white),
-                    textAlign: TextAlign.right,);
-                  }),
+              height: 90,
             ),
-            Resultados(),
+            Pantalla(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 calcButton('Cl',Colors.yellow[700]!,Colors.white,()=>blc.add(eliminar())),
                 calcButton('+/-',Colors.yellow[700]!,Colors.white,()=>(){}),
-                calcButton('%',Colors.yellow[700]!,Colors.white,()=>(){}),
+                calcButton('%',Colors.yellow[700]!,Colors.white,()=>blc.add(operador('%'))),
                 calcButton('/',Colors.redAccent,Colors.white,()=>blc.add(operador('/'))),
               ],
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -123,123 +114,6 @@ class _CalculatorState extends State<Calculator> {
         ),
       ),
     );
-  }
-
-  //Calculator logic
-  dynamic text ='0';
-  double numOne = 0;
-  double numTwo = 0;
-
-  dynamic result = '';
-  dynamic finalResult = '';
-  dynamic opr = '';
-  dynamic preOpr = '';
-  void calculation(btnText) {
-
-
-    if(btnText  == 'Cl') {
-      text ='0';
-      numOne = 0;
-      numTwo = 0;
-      result = '';
-      finalResult = '0';
-      opr = '';
-      preOpr = '';
-      resultados.clear();
-
-    } else if( opr == '=' && btnText == '=') {
-
-      if(preOpr == '+') {
-        finalResult = add();
-      } else if( preOpr == '-') {
-        finalResult = sub();
-      } else if( preOpr == 'x') {
-        finalResult = mul();
-      } else if( preOpr == '/') {
-        finalResult = div();
-      }
-    } else if(btnText == '+' || btnText == '-' || btnText == 'x' || btnText == '/' || btnText == '=') {
-
-      if(numOne == 0) {
-        numOne = double.parse(result);
-      } else {
-        numTwo = double.parse(result);
-      }
-
-      if(opr == '+') {
-        finalResult = add();
-      } else if( opr == '-') {
-        finalResult = sub();
-      } else if( opr == 'x') {
-        finalResult = mul();
-      } else if( opr == '/') {
-        finalResult = div();
-      }
-      preOpr = opr;
-      opr = btnText;
-      result = '';
-      resultados.add(finalResult);
-    }
-    else if(btnText == '%') {
-      result = numOne / 100;
-      finalResult = doesContainDecimal(result);
-    } else if(btnText == '.') {
-      if(!result.toString().contains('.')) {
-        result = result.toString()+'.';
-      }
-      finalResult = result;
-    }
-
-    else if(btnText == '+/-') {
-      result.toString().startsWith('-') ? result = result.toString().substring(1): result = '-'+result.toString();
-      finalResult = result;
-
-    }
-
-    else {
-      result = result + btnText;
-      finalResult = result;
-    }
-
-
-    setState(() {
-      text = finalResult;
-    });
-
-  }
-
-
-  String add() {
-    result = (numOne + numTwo).toString();
-    numOne = double.parse(result);
-    return doesContainDecimal(result);
-  }
-
-  String sub() {
-    result = (numOne - numTwo).toString();
-    numOne = double.parse(result);
-    return doesContainDecimal(result);
-  }
-  String mul() {
-    result = (numOne * numTwo).toString();
-    numOne = double.parse(result);
-    return doesContainDecimal(result);
-  }
-  String div() {
-    result = (numOne / numTwo).toString();
-    numOne = double.parse(result);
-    return doesContainDecimal(result);
-  }
-
-
-  String doesContainDecimal(dynamic result) {
-
-    if(result.toString().contains('.')) {
-      List<String> splitDecimal = result.toString().split('.');
-      if(!(int.parse(splitDecimal[1]) > 0))
-        return result = splitDecimal[0].toString();
-    }
-    return result;
   }
 
 }
